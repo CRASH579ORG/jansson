@@ -43,16 +43,9 @@
 #endif
 
 #include "jansson.h"
+#include "../commit0_stub.h"
 
-static uint32_t buf_to_uint32(char *data) {
-    size_t i;
-    uint32_t result = 0;
-
-    for (i = 0; i < sizeof(uint32_t); i++)
-        result = (result << 8) | (unsigned char)data[i];
-
-    return result;
-}
+static uint32_t buf_to_uint32(char *data) { STUB_PANIC("buf_to_uint32"); }
 
 /* /dev/urandom */
 #if !defined(_WIN32) && defined(USE_URANDOM)
@@ -143,53 +136,9 @@ static int seed_from_windows_cryptoapi(uint32_t *seed) {
 #endif
 
 /* gettimeofday() and getpid() */
-static int seed_from_timestamp_and_pid(uint32_t *seed) {
-#ifdef HAVE_GETTIMEOFDAY
-    /* XOR of seconds and microseconds */
-    struct timeval tv;
-    gettimeofday(&tv, NULL);
-    *seed = (uint32_t)tv.tv_sec ^ (uint32_t)tv.tv_usec;
-#else
-    /* Seconds only */
-    *seed = (uint32_t)time(NULL);
-#endif
+static int seed_from_timestamp_and_pid(uint32_t *seed) { STUB_PANIC("seed_from_timestamp_and_pid"); }
 
-    /* XOR with PID for more randomness */
-#if defined(_WIN32)
-    *seed ^= (uint32_t)GetCurrentProcessId();
-#elif defined(HAVE_GETPID)
-    *seed ^= (uint32_t)getpid();
-#endif
-
-    return 0;
-}
-
-static uint32_t generate_seed() {
-    uint32_t seed = 0;
-    int done = 0;
-
-#if !defined(_WIN32) && defined(USE_URANDOM)
-    if (seed_from_urandom(&seed) == 0)
-        done = 1;
-#endif
-
-#if defined(_WIN32) && defined(USE_WINDOWS_CRYPTOAPI)
-    if (seed_from_windows_cryptoapi(&seed) == 0)
-        done = 1;
-#endif
-
-    if (!done) {
-        /* Fall back to timestamp and PID if no better randomness is
-           available */
-        seed_from_timestamp_and_pid(&seed);
-    }
-
-    /* Make sure the seed is never zero */
-    if (seed == 0)
-        seed = 1;
-
-    return seed;
-}
+static uint32_t generate_seed() { STUB_PANIC("generate_seed"); }
 
 volatile uint32_t hashtable_seed = 0;
 
@@ -264,14 +213,5 @@ void json_object_seed(size_t seed) {
 }
 #else
 /* Fall back to a thread-unsafe version */
-void json_object_seed(size_t seed) {
-    uint32_t new_seed = (uint32_t)seed;
-
-    if (hashtable_seed == 0) {
-        if (new_seed == 0)
-            new_seed = generate_seed();
-
-        hashtable_seed = new_seed;
-    }
-}
+void json_object_seed(size_t seed) { STUB_PANIC("json_object_seed"); }
 #endif

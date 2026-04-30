@@ -10,19 +10,8 @@
 #endif
 
 #include "jansson.h"
+#include "../commit0_stub.h"
 
-const char *jansson_version_str(void) { return JANSSON_VERSION; }
+const char *jansson_version_str(void) { STUB_PANIC("jansson_version_str"); }
 
-int jansson_version_cmp(int major, int minor, int micro) {
-    int diff;
-
-    if ((diff = JANSSON_MAJOR_VERSION - major)) {
-        return diff;
-    }
-
-    if ((diff = JANSSON_MINOR_VERSION - minor)) {
-        return diff;
-    }
-
-    return JANSSON_MICRO_VERSION - micro;
-}
+int jansson_version_cmp(int major, int minor, int micro) { STUB_PANIC("jansson_version_cmp"); }
